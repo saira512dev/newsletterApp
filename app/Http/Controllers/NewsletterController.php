@@ -41,7 +41,7 @@ class NewsletterController extends Controller
                 return redirect()->route('get.userEmail');
             } else {
 
-                return view('pages/list',['newsletters' => $newsletters]);
+                return view('pages/subscriber/list',['newsletters' => $newsletters]);
             }
         }
 
