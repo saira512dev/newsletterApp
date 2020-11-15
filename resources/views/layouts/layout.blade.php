@@ -8,7 +8,7 @@
    <header class="row">
        @include('partials.header')
    </header>
-   <div id="main" class="row">
+   <div id="main" class="row" style ="margin-bottom: 100px">
            @yield('content')
    </div>
    <footer class="row">

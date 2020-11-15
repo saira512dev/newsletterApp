@@ -8,12 +8,12 @@
    <header class="row">
        @include('partials.admin.header')
    </header>
-   <div id="main" class="row">
+   <div id="main" class="row" style ="margin-bottom: 50px">
            @yield('content')
    </div>
-   <footer class="row">
+   <div>
        @include('partials.admin.footer')
-   </footer>
+   </div>
 </div>
 @include('partials.admin.footerScripts')
 </body>
