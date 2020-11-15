@@ -6,39 +6,39 @@
         <div class="col-lg-6 offset-lg-3 ">
         
             <h3 style="text-align:center">All Subscribers</h3>
-            <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#addModal" id="open">Add New Subscriber</button>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover mx-auto w-auto" id="allUsers">
-                    <tr>
-                        <th scope="col">id</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Email</th>
-                        <th scope="col" class="col-sm-3">Actions</th>
-                    </tr>
-                    @foreach($users as $user)
+            <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#addModal" >Add New Subscriber</button>
+            @if (count($users) >0)
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mx-auto w-auto" id="allUsers">
                         <tr>
-                            <td>{{$user->id}}</td>
-                            <td>{{$user->name}}</td>
-                            <td>{{$user->email}}</td>
-                            <td class="text-nowrap" >
-                                <form class="destroy-form" action="{{route('admin.user.delete',['id' => $user->id])}}" method="post">
-                                    {{csrf_field()}}
-                                    <input type="hidden" name="_method" value="delete">
-                                    <button class="btn btn-danger float-left" type="submit" style="margin:10px"> Delete</button>
-                                </form>                            
-                                <button type="button" class="btn btn-success" style="margin:10px" data-id ="{{ $user->id}}"  data-name ="{{ $user->name}}" data-email ="{{ $user->email}}"data-toggle="modal" data-target="#editModal" id="editOpen">Edit</button>
-                            </td>
+                            <th scope="col">id</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col" class="col-sm-3">Actions</th>
                         </tr>
-                    @endforeach
-                </table>
+                        @foreach($users as $user)
+                            <tr>
+                                <td>{{$user->id}}</td>
+                                <td>{{$user->name}}</td>
+                                <td>{{$user->email}}</td>
+                                <td class="text-nowrap" >
+                                    <form class="destroy-form" action="{{route('admin.user.delete',['id' => $user->id])}}" method="post">
+                                        {{csrf_field()}}
+                                        <input type="hidden" name="_method" value="delete">
+                                        <button class="btn btn-danger float-left" type="submit" style="margin:10px"> Delete</button>
+                                    </form>                            
+                                    <button type="button" class="btn btn-success" style="margin:10px" data-id ="{{ $user->id}}"  data-name ="{{ $user->name}}" data-email ="{{ $user->email}}"data-toggle="modal" data-target="#editModal" id="editOpen">Edit</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </table>
+                @endif
             </div>
         </div>
     </div>
 </div>
 
 <!--Add User Modal Box-->
-<form method="post" action="{{url('admin/subscriber/create')}}" id="form">
-        @csrf
     <div class="modal" tabindex="-1" role="dialog" id="addModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -71,14 +71,11 @@
             </div>
         </div>
     </div>
-</form>
 
 
 
 <!--Edit User Modal Box-->
-<form method="put"  id="editForm">
-        @csrf
-    <div class="modal" tabindex="-1" role="dialog" id="editModal">
+    <div class="modal" tabindex="-1"  role="dialog" id="editModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="alert alert-danger alert-dismissable" id="editFail" style="display:none"></div>
@@ -90,6 +87,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <input type="hidden" id="editId" name="editId" >
                     <div class="row">
                         <div class="form-group col-lg-8">
                         <label for="Name">Name:</label>
@@ -110,7 +108,6 @@
             </div>
         </div>
     </div>
-</form>
 
 
 
@@ -128,16 +125,26 @@
 </script>
 
 
-      <!-- Latest compiled and minified JavaScript -->
 <script>
 jQuery(document).ready(function(){
+    
+    $('#addModal').on('show.bs.modal', function (event) {       
+        $('#email').val('');
+        $('#name').val('');
+        $('#addSuccess').html('');
+        $('#addFail').html('');
+        $('#addSuccess').hide();
+        $('#addFail').hide();
+    });
+    
+
     jQuery('#addSubscriber').click(function(e){
         e.preventDefault();
         $('#addsuccess').hide();
         $('#addFail').hide();
         $('#addsuccess').html('');
         $('#addFail').html('');
-
+        
         
         $.ajaxSetup({
             headers: {
@@ -162,12 +169,9 @@ jQuery(document).ready(function(){
                    }
                    $('#addFail').show();
                 }
-                //console.log(error.message)
             },
             success: function(data) {
-                var newUser = data.responseJSON;
-                console.log(newUser);
-                $('#addSuccess').append('subscriber '+name+' added');
+                $('#addSuccess').append('subscriber '+data.user.name+' added');
                 $('#addSuccess').show();
                 
             }
@@ -175,22 +179,25 @@ jQuery(document).ready(function(){
     });
 
 
-    jQuery('#editOpen').click(function(e){
-        e.preventDefault();
-        $('#editsuccess').hide();
+    $('#editModal').on('show.bs.modal', function (event) {       
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        $('#editSuccess').hide();
         $('#editFail').hide();
-        $('#editsuccess').html('');
+        $('#editSuccess').html('');
         $('#editFail').html('');
-        $("#editName").val('');
-        $("#editEmail").val('');
         
 
-        var userId = $(this).data('id');
-        var userName = $(this).data('name');
-        var userEmail = $(this).data('email');
+        var userId = button.data('id');
+        var userName = button.data('name');
+        var userEmail = button.data('email');
         console.log(userId);
-        $("#editName").val(userName);
-        $("#editEmail").val(userEmail);
+        $('#editName').val(userName);
+        $('#editEmail').val(userEmail);
+        $('#editId').val(userId);
+    });
+
+    jQuery('#editSubscriber').click(function(e){
+        userId = jQuery('#editId').val();
         
         $.ajaxSetup({
             headers: {
@@ -201,6 +208,7 @@ jQuery(document).ready(function(){
             method: 'put',
             data: {
                 _token: '{!! csrf_token() !!}',
+                id: userId,
                 name: jQuery('#editName').val(),
                 email: jQuery('#editEmail').val(),
             },
@@ -218,9 +226,7 @@ jQuery(document).ready(function(){
                 //console.log(error.message)
             },
             success: function(data) {
-                var newUser = data.responseJSON;
-                console.log(newUser);
-                $('#editSuccess').append('changes to subscriber '+name+' saved');
+                $('#editSuccess').append('changes to subscriber '+data.user.name+' saved');
                 $('#editSuccess').show();
                 
             }
