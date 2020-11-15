@@ -9,7 +9,7 @@
                 <div class="panel-body">
                     <div class="row justify-content-center">
 
-                        <form class="form-horizontal" role="form" method="POST" action="{{ url('/newsletters') }}">
+                        <form class="form-horizontal" role="form" method="GET" action="{{ url('/newsletters') }}">
                         {{ csrf_field() }}
 
                             <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">

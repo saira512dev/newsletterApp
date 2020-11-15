@@ -20,7 +20,7 @@ Route::post('/subscribe','UserController@store')->name('add.subscriber');
 Route::get('/getByUser', function () {
     return view('pages/subscriber/getEmail');
 })->name('get.userEmail');
-Route::post('/newsletters','NewsletterController@getByEmail');
+Route::get('/newsletters','NewsletterController@getByEmail');
 
 //admin
 Route::get('/admin','AdminController@index')->name('admin.home');
