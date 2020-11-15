@@ -19,6 +19,14 @@
                     @endforeach
                 </table>
             </div>
+            @if($newsletters->total() == 0)
+                <br>
+                <br>
+                <h4 class="text-center">No Newsletters yet!!</h4>
+                <br>
+            @endif
+            {{ $newsletters->appends(Request::except('page'))->links() }}  
+
         </div>
     </div>
 </div>

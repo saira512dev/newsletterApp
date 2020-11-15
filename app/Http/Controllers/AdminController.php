@@ -16,7 +16,7 @@ class AdminController extends Controller
     //retrieves all subscribers
     public function index()
     {
-        $users = User::all();
+        $users = User::paginate(5);
 
         return view('pages/admin/home',['users' => $users]);
     }

@@ -33,9 +33,19 @@
                         @endforeach
                     </table>
                 @endif
-            </div>
+                @if($users->total() == 0)
+                <br>
+                <br>
+                <h4 class="text-center">No Subscribers yet!!</h4>
+                <br>
+            @endif
+
+                {{ $users->links() }}
+
         </div>
+
     </div>
+
 </div>
 
 <!--Add User Modal Box-->
@@ -140,9 +150,9 @@ jQuery(document).ready(function(){
 
     jQuery('#addSubscriber').click(function(e){
         e.preventDefault();
-        $('#addsuccess').hide();
+        $('#addSuccess').hide();
         $('#addFail').hide();
-        $('#addsuccess').html('');
+        $('#addSuccess').html('');
         $('#addFail').html('');
         
         

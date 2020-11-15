@@ -10,6 +10,9 @@ use Validator;
 use Session;
 use Mail;
 use App\Mail\SendNewsletter;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class NewsletterController extends Controller
 {
@@ -23,7 +26,7 @@ class NewsletterController extends Controller
         $input = $request->all();
         Validator::make($input, [
             'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'min:20','max:2000'],
+            'description' => ['required', 'min:20','max:5000'],
         ])->validate();
 
         $newsletter = new Newsletter;
@@ -78,10 +81,19 @@ class NewsletterController extends Controller
 
                 return redirect()->route('get.userEmail');
             } else {
-
+                $newsletters = $this->paginate($newsletters);
+                $newsletters->setPath('/newsletters');
                 return view('pages/subscriber/list',['newsletters' => $newsletters]);
             }
         }
 
+    }
+
+
+    protected function paginate($items, $perPage = 3, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 }
