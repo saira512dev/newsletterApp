@@ -6,18 +6,14 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Validator;
 use App\Models\User;
+use App\Models\Newsletter;
 use Session;
+use Mail;
+use App\Mail\SendNewsletter;
 
 class UserController extends Controller
 {
     
-    //retrieves all subscribers
-    public function index()
-    {
-        $subscribers = App\Models\User::all();
-
-        
-    }
 
     //creates a new subscriber
     public function store(Request $request)
@@ -34,6 +30,8 @@ class UserController extends Controller
         $user->email = $input['email'];
         $user->Save();
 
+        $this->sendWelcomeNewsletter($user);
+
         Session::flash('message', "You are subscribed" );
         Session::flash('alert-class', 'alert-success');
 
@@ -41,53 +39,36 @@ class UserController extends Controller
 
     }
 
-    //edits and updates subscriber info
-    public function update(Request $request,$id)
-    {
-        $design = $this->designs->find($id);
-        //return $user = $design->user();
-
-        $this->authorize('update', $design,$design);
-        
-        $this->validate($request,[
-            'title' => ['required', 'unique:designs,title,'.$id],
-            'description' => ['required','string','min:20', 'max:140'],
-            'tags' => ['required'],
-            "team" => ['required_if:assign_to_team,true']
-        ]);
-            
-
-        $design = $this->designs->update($id,[
-            "team_id" => $request->team,
-            'title' => $request->title,
-            'description' => $request->description,
-            'slug' => Str::slug($request->title),
-            'is_live' => !$design->upload_successfull ? false :$request->is_live
-        ]);
-
-        //Apply tags
-       $this->designs->applyTags($id,$request->tags);
-
-        return new DesignResource($design);
-    }
-
+    
     //removes a subscriber
     public function destroy($id)
+    { 
+        $user = User::find($id);
+        $username = $user->name;
+
+        $user->delete();
+        Session::flash('message', "Subscriber (${username}) deleted" );
+        Session::flash('alert-class', 'alert-success');
+
+        return redirect()->route('admin.home');
+
+    }
+
+    protected function sendWelcomeNewsletter(User $user)
     {
-        $design = $this->designs->find($id);
-        $this->authorize('delete', $design);
+        $title = "welcome to NewsletterApp";
+        $description = "we hope we find you in best of your health.Thank you for 
+        subscribing .";
 
-        //delete the files associated with the record
-        foreach(['thumbnail','large','original'] as $size){
-            //check if the file exists
-            if(Storage::disk($design->disk)->exists("uploads/designs/{$size}/".$design->image)){
-                Storage::disk($design->disk)->delete("uploads/designs/{$size}/".$design->image);
-            }
-        }
+        $newsletter = new Newsletter;
 
-        $this->designs->delete($id);
+        $newsletter->title = $title;
+        $newsletter->description = $description;
+        $newsletter->Save(); 
 
-        return response()->json(["message" => "Record deleted"], 200);
+        $user->newsletters()->attach($newsletter->id);
 
+        Mail::to($user->email)
+        ->send(new SendNewsletter($user->name,true,$title,$description));
     }
 }

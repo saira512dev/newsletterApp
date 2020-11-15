@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Validator;
 use App\Models\User;
+use App\Models\Newsletter;
 use Session;
+use Mail;
+use App\Mail\SendNewsletter;
 
 class AdminController extends Controller
 {
@@ -32,16 +35,16 @@ class AdminController extends Controller
         $user->email = $input['email'];
         $user->Save();
 
-        return redirect()->route('admin.home');
+        $this->sendWelcomeNewsletter($user);
 
+        return ['user' => $user];
     }
 
     //edits and updates subscriber info
     public function update(Request $request,$id)
     {
-       return  $user = User::find($id);
+        $user = User::find($id);
 
-        
         $this->validate($request,[
             'email' => ['required', 'unique:users,email,'.$id],
             'name' => ['required','string', 'max:255'],
@@ -53,7 +56,27 @@ class AdminController extends Controller
 
         $user->save();
 
-        return redirect()->route('admin.home');
+        return ['user' => $user];
+
+    }
+
+    protected function sendWelcomeNewsletter(User $user)
+    {
+        $newsletter = new Newsletter;
+
+        $title = "welcome to NewsletterApp";
+        $description = "we hope we find you in best of your health.Thank you for 
+        subscribing .";
+
+        $newsletter->title = $title;
+        $newsletter->description = $description;
+        $newsletter->Save(); 
+
+        $user->newsletters()->attach($newsletter->id);
+        
+        Mail::to($user->email)
+        ->send(new SendNewsletter($user->name,true,$title,$description));
+
     }
 
     
