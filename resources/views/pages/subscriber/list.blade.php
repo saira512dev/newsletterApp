@@ -8,13 +8,15 @@
             <div class="table-responsive">
                 <table class="table table-striped table-hover mx-auto w-auto" >
                     <tr>
-                        <th scope="col">Title</th>
-                        <th scope="col" class="col-sm-3">Description</th>
+                        <th scope="col" class="">Title</th>
+                        <th scope="col" class="col-sm-2">Description</th>
+                        <th scope="col">Published On</th>
                     </tr>
                     @foreach($newsletters as $newsletter)
                         <tr>
                             <td>{{$newsletter->title}}</td>
                             <td>{{$newsletter->description}}</td>
+                            <td>{{$newsletter->created_at->format('Y-m-d')}}</td>
                         </tr>
                     @endforeach
                 </table>
@@ -25,8 +27,10 @@
                 <h4 class="text-center">No Newsletters yet!!</h4>
                 <br>
             @endif
-            {{ $newsletters->appends(Request::except('page'))->links() }}  
+            <div class="d-flex justify-content-center">
 
+            {{ $newsletters->links() }}  
+</div>
         </div>
     </div>
 </div>

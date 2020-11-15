@@ -39,8 +39,10 @@
                 <h4 class="text-center">No Subscribers yet!!</h4>
                 <br>
             @endif
+            <div class="d-flex justify-content-center">
 
                 {{ $users->links() }}
+            </div>
 
         </div>
 
