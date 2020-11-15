@@ -75,6 +75,7 @@ class NewsletterController extends Controller
 
         } else {
             $newsletters = $user->newsletters;
+
             if(count($newsletters) == NULL){
                 Session::flash('message', "You have not recieved any newsletters yet,kindly check later" );
                 Session::flash('alert-class', 'alert-danger');
@@ -83,6 +84,7 @@ class NewsletterController extends Controller
             } else {
                 $newsletters = $this->paginate($newsletters);
                 $newsletters->setPath('/newsletters');
+                $newsletters->appends(['email' => $input['email']]);
                 return view('pages/subscriber/list',['newsletters' => $newsletters]);
             }
         }
