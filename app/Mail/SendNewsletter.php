@@ -37,19 +37,20 @@ class SendNewsletter extends Mailable
 
         if($this->new_user){
             return $this->markdown('emails.newsletters.newUser')
-                    ->subject('Thank you for subscribing')
-                    ->with([
-                        'user_name' => $this->user_name,
-                        'title' => $this->title,
-                        'description' => $this->description
-                    ]);
+            ->subject('Thank you for subscribing')
+            ->with([
+                'user_name' => $this->user_name,
+                'title' => $this->title,
+                'description' => $this->description
+            ]);
         } else {
             return $this->markdown('emails.newsletters.oldUser')
-                    ->subject('Newsletter')
-                    ->with([
-                        'user_name' => $this->user_name,
-                        'title' => $this->title,
-                        'description' => $this->description
-                    ]);
-    }   }
+            ->subject('Newsletter')
+            ->with([
+                'user_name' => $this->user_name,
+                'title' => $this->title,
+                'description' => $this->description
+            ]);
+        }
+    }   
 }

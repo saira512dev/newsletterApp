@@ -13,8 +13,6 @@ use App\Mail\SendNewsletter;
 
 class UserController extends Controller
 {
-    
-
     //creates a new subscriber
     public function store(Request $request)
     {
@@ -32,11 +30,15 @@ class UserController extends Controller
 
         $this->sendWelcomeNewsletter($user);
 
+        if($request->ajax()){        
+            
+            return ['user' => $user];
+        }
+
         Session::flash('message', "You are subscribed" );
         Session::flash('alert-class', 'alert-success');
 
         return redirect()->route('home');
-
     }
 
     
@@ -44,16 +46,17 @@ class UserController extends Controller
     public function destroy($id)
     { 
         $user = User::find($id);
+        
         $username = $user->name;
-
         $user->delete();
+
         Session::flash('message', "Subscriber (${username}) deleted" );
         Session::flash('alert-class', 'alert-success');
 
         return redirect()->route('admin.home');
-
     }
 
+    //implements sending welcome newsletter for new subscriber
     protected function sendWelcomeNewsletter(User $user)
     {
         $title = "welcome to NewsletterApp";

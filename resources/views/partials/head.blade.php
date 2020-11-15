@@ -2,6 +2,7 @@
 <meta name="description" content="">
 <meta name="saira" content="Blade">
 <title>{{ env('APP_NAME') }}</title>
+ 
  <!-- Scripts -->
  <script src="{{ asset('js/app.js') }}" defer></script>
    

@@ -24,7 +24,6 @@ Route::get('/newsletters','NewsletterController@getByEmail');
 
 //admin
 Route::get('/admin','AdminController@index')->name('admin.home');
-Route::post('/admin/subscriber/create','AdminController@store')->name('admin.add.subscriber');
 Route::delete('/admin/user/delete/{id}','UserController@destroy')->name('admin.user.delete');
 Route::put('/admin/user/edit/{id}','AdminController@update')->name('admin.user.edit');
 Route::get('/admin/newsletter/create',function() {

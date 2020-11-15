@@ -18,9 +18,10 @@ class NewsletterController extends Controller
 {
     public function index()
     {
-        // $subscribers = App\Models\User::all();
+
     }
 
+    //creates a new newsletter
     public function store(Request $request)
     {
         $input = $request->all();
@@ -45,7 +46,6 @@ class NewsletterController extends Controller
                 ->send(new SendNewsletter($user->name,false,$newsletter->title,$newsletter->description));
     
             }
-    
             Session::flash('message', "Newsletter published and sent to all subscribers" );
             Session::flash('alert-class', 'alert-success');
     
@@ -57,7 +57,7 @@ class NewsletterController extends Controller
         return redirect()->route('admin.create.newsletter');
     }
 
-    
+    //retrieves all old newsletters of a particular user
     public function getByEmail(Request $request)
     {
         $input = $request->all();
@@ -67,12 +67,12 @@ class NewsletterController extends Controller
         ])->validate();
 
         $user = User::where('email', $input['email'])->first();
+
         if(!$user){
             Session::flash('message', "You are not a subscriber yet,please subscribe" );
             Session::flash('alert-class', 'alert-danger');
 
             return redirect()->route('get.userEmail');
-
         } else {
             $newsletters = $user->newsletters;
 
@@ -85,13 +85,13 @@ class NewsletterController extends Controller
                 $newsletters = $this->paginate($newsletters);
                 $newsletters->setPath('/newsletters');
                 $newsletters->appends(['email' => $input['email']]);
+
                 return view('pages/subscriber/list',['newsletters' => $newsletters]);
             }
         }
-
     }
 
-
+    //implements pagination for a collection of newsletters
     protected function paginate($items, $perPage = 3, $page = null, $options = [])
     {
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);

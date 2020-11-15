@@ -18,7 +18,6 @@ class Newsletter extends Model
     protected $fillable = [
         'title',
         'description',
-        'subscriber_id'
     ];
 
     public function subscriber()
