@@ -26,4 +26,8 @@ Route::post('/newsletters','NewsletterController@getByEmail');
 Route::get('/admin','AdminController@index')->name('admin.home');
 Route::post('/admin/subscriber/create','AdminController@store')->name('admin.add.subscriber');
 Route::delete('/admin/user/delete/{id}','UserController@destroy')->name('admin.user.delete');
-Route::put('/admin/user/edit/{id}','UserController@update')->name('admin.user.edit');
+Route::put('/admin/user/edit/{id}','AdminController@update')->name('admin.user.edit');
+Route::get('/admin/newsletter/create',function() {
+    return view('pages/admin/newsletter');
+})->name('admin.create.newsletter');
+Route::post('/admin/newsletter/store','NewsletterController@store')->name('admin.publish.newsletter');
